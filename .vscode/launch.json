@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - App",
+            "request": "launch",
+            "mainClass": "com.Idries_Joseph_Spencer.FSE_APP.App",
+            "projectName": "FSE-APP"
+        }
+    ]
+}
