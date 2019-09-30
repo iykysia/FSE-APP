@@ -8,9 +8,9 @@ public class MainVerticle extends AbstractVerticle {
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
     vertx.createHttpServer().requestHandler(req -> {
-      req.response()
-        .putHeader("content-type", "text/plain")
-        .end("Hello from Vert.x!");
+      req.response().sendFile("src\\resources\\html\\test.html", 0);
+        // .putHeader("content-type", "text/plain")
+        // .end("Hello from Vert.x!");
     }).listen(8888, http -> {
       if (http.succeeded()) {
         startPromise.complete();
