@@ -21,8 +21,10 @@ public class App
         //       System.out.println("Undeploy failed!");
         //     }
         //   });
-          long timerID = vertx.setPeriodic(20000, id -> {
+          long timerID = vertx.setPeriodic(1000, id -> {
             System.out.println("And every second this is printed");
           });
+        //   vertx.cancelTimer(timerID);
+
     }
 }
