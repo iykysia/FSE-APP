@@ -20,37 +20,19 @@ public class MainVerticle extends AbstractVerticle {
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
     HttpServer server = vertx.createHttpServer();
-    // server.requestHandler(req -> {
-    //   req.response().sendFile("src\\resources\\html\\test.html", 0);
-    //     // .putHeader("content-type", "text/plain")
-    //     // .end("Hello from Vert.x!");
-    // }).listen(8888, http -> {
-    //   if (http.succeeded()) {
-    //     startPromise.complete();
-    //     System.out.println("HTTP server started on port 8888");
-    //   } else {
-    //     startPromise.fail(http.cause());
-    //   }
-    // });
-
-
-    // ***this is from the router
-    // HttpServerResponse response = routingContext.response();
+    server.requestHandler(
+      r->{r.setExpectMultipart(true);
+    }
+    );
 
     Router router = Router.router(vertx);
     router.route().handler(BodyHandler.create());
-    // router.route().handler(routingContext -> {
-    //   HttpServerResponse response = routingContext.response();
-    //   response.sendFile("src\\resources\\html\\test.html", 0);
-    // });
-    // Route route = router.route(HttpMethod.POST, "/login");
-    // route.handler(routingContext -> {
-
       router.route(HttpMethod.POST, "/login").handler(routingContext -> {
       System.out.println("Post to login");
-      HttpServerResponse response = routingContext.response();
-      // response.putHeader("content-type", "application/json");
-      // JsonObject postJson = routingContext.getBodyAsJson();
+      HttpServerRequest response = routingContext.request();
+      // routingContext.response
+      // response.putHeader("content-type", "application/text");
+      System.out.println(response.formAttributes().get("username"));
       // System.out.println(postJson != null);
 
       // System.out.println(routingContext.getBodyAsString());
@@ -64,8 +46,13 @@ public class MainVerticle extends AbstractVerticle {
 
       String username = "username";
       String password = "password";
-      username = routingContext.request().getParam("username");
-      password = routingContext.request().getParam("password");
+      // username = 
+      // System.out.println(
+      // routingContext.request().bodyHandler(body ->{
+      //   System.out.println(body.toString());
+      // });
+      // .getParam("username");
+      // password = routingContext.request().getParam("password");
       // HttpServerResponse response = routingContext.response();
       // response.putHeader("content-type", "application/json");
       // String username = postJson.getString("username");
@@ -74,7 +61,7 @@ public class MainVerticle extends AbstractVerticle {
       // String password = postJson.getString("password");
       // System.out.println("Post Password: " + password);
 
-
+        
       if(username.equals("username") && password.equals("password"))
       {
         //60000 times minutes or 1000 times seconds work for timing out
@@ -87,7 +74,7 @@ public class MainVerticle extends AbstractVerticle {
       routingContext.reroute("/login/fail");
       }
         // Write to the response and end it
-      response.end("{\"status\": 200}");
+      // response.end("{\"status\": 200}");
     });
     Route routeHome = router.route("/");
     routeHome.handler(routingContext -> {
