@@ -23,8 +23,13 @@ Hello world
 		<div class="container">
 			<div class="jumbotron">
 				<h1 class="display-4">Login</h1>
-				<form action="/login" class="was-validated" method="POST">
-					<div class="form-group">
+				<form action="/login" class="was-validated" method="post">
+					<fieldset>
+						<input id="username" name="username" type="text" class="form-control"required>
+						<input id="password" name="password" type="password" class="form-control"required>
+						<button id="login" type="submit" class="btn btn-primary btn-block">
+					</fieldset>
+					<!-- <div class="form-group">
 						<input id="username" type="text" class="form-control" placeholder="Username" required>
 						<div class="invalid-feedback">Please fill out this field.</div>
 					</div>
@@ -40,11 +45,11 @@ Hello world
 						<span style="display: none;" class="spinner-grow spinner-grow-sm"></span>
 						Login
 					</button>
-					</input>
+					</input> -->
 				</form>
-				<div class="alert alert-danger">
+				<!-- <div class="alert alert-danger">
 					Invalid username or password.
-				</div>
+				</div> -->
 			</div>
 		</div>
 		<!-- Optional JavaScript -->
