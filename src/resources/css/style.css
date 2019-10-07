@@ -1,0 +1,113 @@
+body {
+	/* VARIABLES */
+	--highlight: white;
+	--text: black;
+	--border: darkgray;
+	--background: lightgray;
+	--button: lightgray;
+	--height: 32px;
+	--margin: 20px;
+	--padding: 40px;
+	--accent: black;
+	--shadow: rgba(0, 0, 0, 0.25);
+	/* FONT */
+	font-family: "Helvetica Neue", "Segoe UI", "Arial", sans-serif;
+	/* COLOR */
+	background-image: url("../media/background.png");
+	/* LAYOUT */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0;
+	height: 100vh;
+}
+
+main {
+	/* COLORS */
+	background: white;
+	/* LAYOUT */
+	padding: var(--padding);
+	width: 100%;
+}
+
+header {
+	/* FONT */
+	text-shadow: 0 1px white;
+	/* COLORS */
+	color: black;
+	background: linear-gradient( var(--highlight), var(--background) );
+	box-shadow: 0 1px var(--accent);
+	/* LAYOUT */
+	height: 50px;
+	display: flex;
+	justify-content: left;
+	align-items: center;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+
+nav {
+	height: 100%;
+	display: flex;
+	flex-direction: row;
+}
+
+nav a {
+	border-left: solid var(--border) 1px;
+	border-right: solid var(--border) 1px;
+	margin-right: -1px;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	padding: 0 var(--padding);
+}
+
+#login {
+	display: flex;
+	flex-direction: column;
+}
+
+/* WIDGETS */
+
+input[type=text], input[type=password] {
+	background: white;
+	border: solid 1px;
+	border-color: var(--border);
+	padding: 5px 20px;
+	box-shadow: 0 1px 5px rgba(0,0,0,0.1) inset;
+	margin-bottom: var(--margin);
+	height: var(--height);
+	border-radius: 1px;
+}
+
+input::placeholder {
+	font-style: italic;
+}
+
+input[type=submit] {
+	background: linear-gradient();
+}
+
+button {
+	height: var(--height);
+	background: var(--button);
+	border: solid var(--border) 1px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: linear-gradient( var(--highlight), var(--background) );
+	border-radius: 1px;
+}
+
+button:active {
+	box-shadow: 0 1px 5px var(--shadow) inset;
+}
+
+/* HEADINGS */
+
+h1, h2, h3, h4, h5, h6 {
+	font-weight: normal;
+	margin: 0;
+	margin-bottom: var(--margin);
+}
