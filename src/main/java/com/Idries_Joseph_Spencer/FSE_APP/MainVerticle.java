@@ -35,37 +35,11 @@ public class MainVerticle extends AbstractVerticle {
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
     HttpServer server = vertx.createHttpServer();
-/*
-    MySQLConnectOptions connectOptions = new MySQLConnectOptions()
-  .setPort(3306)
-  // .setHost("")
-  .setDatabase("the-db")
-  .setUser("user")
-  .setPassword("secret");
-
-// Pool options
-PoolOptions poolOptions = new PoolOptions()
-  .setMaxSize(5);
-
-// Create the client pool
-MySQLPool client = MySQLPool.pool(vertx, connectOptions, poolOptions);
-
-// A simple query
-// client.
-client.query("SELECT * FROM users WHERE id='julien'", (Handler<AsyncResult<RowSet>>)ar -> {
-  if (ar.succeeded()) {
-    RowSet result = ar.result();
-    System.out.println("Got " + result.size() + " rows ");
-  } else {
-    System.out.println("Failure: " + ar.cause().getMessage());
-  }
-
-  // Now close the pool
-  client.close();
-});
-*/
 
 /*
+///
+///This is code is the same as MySQLLinker
+///
 Connection conn = null;
 try {
   conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sakila?useSSL=false&serverTimezone=UTC", "root","jinn");
@@ -80,15 +54,17 @@ try {
   // ResultSet rs = stmt.execute("use sakila;");
   // ResultSet rs = stmt.executeQuery("INSERT into user ("")");  
   System.out.println(rs.toString());
+  conn.close();
+  System.out.println(rs.toString());
 
  
 } catch (SQLException ex) {
-  // handle any errors
   System.out.println("SQLException: " + ex.getMessage());
   System.out.println("SQLState: " + ex.getSQLState());
   System.out.println("VendorError: " + ex.getErrorCode());
 }
 */
+
 ResultSet rs = MySQLLinker.ConnectAndQuery("sakila", "root", "jinn", "Select * from actor");
 if(!rs.equals(null)) {
   System.out.println(rs.toString());
@@ -97,28 +73,7 @@ else {
   System.out.println("LinkerFailed");
 }
 
-/*
-    JsonObject mySQLClientConfig = new JsonObject().put("database", "fse").put("user", "root").put("password", "jinn");
-    AsyncSQLClient mySQLClient = MySQLClient.createShared(vertx, mySQLClientConfig);
 
-    // mySQLClient.getConnection()
-    // mySQLClient.
-
-    mySQLClient.getConnection(res -> {
-      
-      if (res.succeeded()) {
-        System.out.println("SQL: Connected");
-        SQLConnection connection = res.result();
-        
-        // Got a connection
-    
-      } else {
-        System.out.println("SQL: Connection Failed");
-          System.out.println(res.failed());
-      }
-    });
-
-*/
     
     Router router = Router.router(vertx);
     router.route().handler(BodyHandler.create());

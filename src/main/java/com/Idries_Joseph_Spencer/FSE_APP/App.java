@@ -7,7 +7,6 @@ import io.vertx.core.DeploymentOptions;
 
 public class App
 {
-
     public static void main(String[] args)
     {
         Vertx vertx = Vertx.vertx();
