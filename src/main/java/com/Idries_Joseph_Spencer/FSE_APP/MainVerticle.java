@@ -65,7 +65,7 @@ client.query("SELECT * FROM users WHERE id='julien'", (Handler<AsyncResult<RowSe
 });
 */
 
-
+/*
 Connection conn = null;
 try {
   conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sakila?useSSL=false&serverTimezone=UTC", "root","jinn");
@@ -87,6 +87,14 @@ try {
   System.out.println("SQLException: " + ex.getMessage());
   System.out.println("SQLState: " + ex.getSQLState());
   System.out.println("VendorError: " + ex.getErrorCode());
+}
+*/
+ResultSet rs = MySQLLinker.ConnectAndQuery("sakila", "root", "jinn", "Select * from actor");
+if(!rs.equals(null)) {
+  System.out.println(rs.toString());
+}
+else {  
+  System.out.println("LinkerFailed");
 }
 
 /*
