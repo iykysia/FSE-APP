@@ -1,6 +1,8 @@
 package com.Idries_Joseph_Spencer.FSE_APP;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.AsyncResult;
+// import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.Route;
@@ -9,20 +11,107 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Session;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.asyncsql.MySQLClient;
+import io.vertx.ext.sql.SQLConnection;
+// import io.vertx.mysqlclient.MySQLConnectOptions;
+// import io.vertx.mysqlclient.MySQLPool;
+// import io.vertx.sqlclient.PoolOptions;
+// import io.vertx.sqlclient.*;
+import io.vertx.ext.asyncsql.AsyncSQLClient;
 import io.vertx.ext.web.client.*;
 // import io.vertx.ext.web.FileUpload;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 
 //https://vertx.io/docs/vertx-web/java/
 public class MainVerticle extends AbstractVerticle {
   String user = "";
 
-
-
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
     HttpServer server = vertx.createHttpServer();
+/*
+    MySQLConnectOptions connectOptions = new MySQLConnectOptions()
+  .setPort(3306)
+  // .setHost("")
+  .setDatabase("the-db")
+  .setUser("user")
+  .setPassword("secret");
+
+// Pool options
+PoolOptions poolOptions = new PoolOptions()
+  .setMaxSize(5);
+
+// Create the client pool
+MySQLPool client = MySQLPool.pool(vertx, connectOptions, poolOptions);
+
+// A simple query
+// client.
+client.query("SELECT * FROM users WHERE id='julien'", (Handler<AsyncResult<RowSet>>)ar -> {
+  if (ar.succeeded()) {
+    RowSet result = ar.result();
+    System.out.println("Got " + result.size() + " rows ");
+  } else {
+    System.out.println("Failure: " + ar.cause().getMessage());
+  }
+
+  // Now close the pool
+  client.close();
+});
+*/
 
 
+Connection conn = null;
+try {
+  conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sakila?useSSL=false&serverTimezone=UTC", "root","jinn");
+  System.out.println(conn.getClientInfo("root"));
+  System.out.println("sql succ");
+  // Do something with the Connection
+  System.out.println(conn.toString());
+  // conn.
+  Statement stmt=conn.createStatement(); 
+// conn.setSchema("sakila");
+  ResultSet rs = stmt.executeQuery("Select * from actor"); 
+  // ResultSet rs = stmt.execute("use sakila;");
+  // ResultSet rs = stmt.executeQuery("INSERT into user ("")");  
+  System.out.println(rs.toString());
+
+ 
+} catch (SQLException ex) {
+  // handle any errors
+  System.out.println("SQLException: " + ex.getMessage());
+  System.out.println("SQLState: " + ex.getSQLState());
+  System.out.println("VendorError: " + ex.getErrorCode());
+}
+
+/*
+    JsonObject mySQLClientConfig = new JsonObject().put("database", "fse").put("user", "root").put("password", "jinn");
+    AsyncSQLClient mySQLClient = MySQLClient.createShared(vertx, mySQLClientConfig);
+
+    // mySQLClient.getConnection()
+    // mySQLClient.
+
+    mySQLClient.getConnection(res -> {
+      
+      if (res.succeeded()) {
+        System.out.println("SQL: Connected");
+        SQLConnection connection = res.result();
+        
+        // Got a connection
+    
+      } else {
+        System.out.println("SQL: Connection Failed");
+          System.out.println(res.failed());
+      }
+    });
+
+*/
+    
     Router router = Router.router(vertx);
     router.route().handler(BodyHandler.create());
 
