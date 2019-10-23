@@ -1,34 +1,19 @@
 package com.Idries_Joseph_Spencer.FSE_APP;
 
+import java.sql.ResultSet;
+
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.AsyncResult;
-// import io.vertx.core.Handler;
 import io.vertx.core.Promise;
-import io.vertx.ext.web.Router;
+import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Route;
-import io.vertx.core.http.*;
-import io.vertx.core.http.HttpMethod;
-import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
 import io.vertx.ext.web.Session;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.SessionHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 import io.vertx.ext.web.sstore.SessionStore;
-import io.vertx.ext.asyncsql.MySQLClient;
-import io.vertx.ext.sql.SQLConnection;
-// import io.vertx.mysqlclient.MySQLConnectOptions;
-// import io.vertx.mysqlclient.MySQLPool;
-// import io.vertx.sqlclient.PoolOptions;
-// import io.vertx.sqlclient.*;
-import io.vertx.ext.asyncsql.AsyncSQLClient;
-import io.vertx.ext.web.client.*;
-// import io.vertx.ext.web.FileUpload;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 
 //https://vertx.io/docs/vertx-web/java/
@@ -86,19 +71,17 @@ else {
     router.route().handler(BodyHandler.create());
 
 
+    router.post("/signup").handler(ctx -> {
+    });
 
     router.post("/login").handler(ctx -> {
       String routeURI = "/login/fail";
       if(ctx.request().getParam("username") != null && ctx.request().getParam("password") != null)
       {
-        System.out.println("username was set");
         if(ctx.request().getParam("password").equals("password")){
-          System.out.println("equaled username");
           Session session = ctx.session();
-
           user = ctx.request().getParam("username");
           session.put("username", user);
-
           routeURI = "/homepage";
       }
       }

@@ -9,7 +9,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class MySQLLinker{
-    public static Connection Connect (String database, String user, String password){
+
+    //TODO
+    //  this has to be created to secure the system in order to prevent others from using it to query unacceptable stuff
+    // keep this private as a means of preventing others from doing work in it
+    private static Connection Connect (String database, String user, String password){
         Connection conn = null;
         try {
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+ database +"?useSSL=false&serverTimezone=UTC", user,password);
@@ -23,6 +27,51 @@ public class MySQLLinker{
             return null;
         }
     }
+
+    public static interface PreparedStatementLambda{
+        PreparedStatement PrepareAStatment(Connection conn);
+    }
+
+    private static int PreparedStatementExecute(String database, String user, String password, PreparedStatementLambda prepare){
+        int ret = -1;
+       Connection conn =  Connect (database, user, password);
+       if(!conn.equals(null))
+       {
+           return -1;
+       }
+       try{
+           conn.setAutoCommit(false);
+            PreparedStatement stmt = prepare.PrepareAStatment(conn);
+            ret = stmt.executeUpdate();
+            conn.close();
+       }
+       catch(Exception e){
+
+       }
+       return ret;
+
+    } 
+    private static ResultSet PreparedStatementQuery(String database, String user, String password, PreparedStatementLambda prepare){
+        ResultSet  ret = null;
+        Connection  conn = Connect (database, user, password);
+        if(!conn.equals(null))
+       {
+           return null;
+       }
+       try{
+           conn.setAutoCommit(false);
+            PreparedStatement stmt = prepare.PrepareAStatment(conn);
+            ret = stmt.executeQuery();
+            conn.close();
+       }
+       catch(Exception e){
+
+       }
+
+        return ret;
+    } 
+
+    @Deprecated
     public static ResultSet ConnectAndQuery(String database, String user, String password, String query){
         Connection conn = null;
         try {
@@ -40,6 +89,8 @@ public class MySQLLinker{
             return null;
         }
     }
+
+    @Deprecated
     public static int ConnectAndExecute(String database, String user, String password, String statment){
         Connection conn = null;
         try {
