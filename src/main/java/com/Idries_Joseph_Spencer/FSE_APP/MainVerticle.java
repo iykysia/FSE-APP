@@ -11,6 +11,9 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Session;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.SessionHandler;
+import io.vertx.ext.web.sstore.LocalSessionStore;
+import io.vertx.ext.web.sstore.SessionStore;
 import io.vertx.ext.asyncsql.MySQLClient;
 import io.vertx.ext.sql.SQLConnection;
 // import io.vertx.mysqlclient.MySQLConnectOptions;
@@ -121,6 +124,10 @@ else {
 */
     
     Router router = Router.router(vertx);
+    SessionStore store = LocalSessionStore.create(vertx, "MainVerticle.sessionmap");
+    SessionHandler sessionHandler = SessionHandler.create(store);
+
+    router.route().handler(sessionHandler);
     router.route().handler(BodyHandler.create());
 
 
@@ -132,7 +139,11 @@ else {
         System.out.println("username was set");
         if(ctx.request().getParam("password").equals("password")){
           System.out.println("equaled username");
+          Session session = ctx.session();
+
           user = ctx.request().getParam("username");
+          session.put("username", user);
+
           routeURI = "/homepage";
       }
       }
