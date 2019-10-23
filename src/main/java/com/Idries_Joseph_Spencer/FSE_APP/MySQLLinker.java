@@ -31,6 +31,7 @@ public class MySQLLinker{
         try {
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+ database +"?useSSL=false&serverTimezone=UTC", user,password);
             PreparedStatement prstmt = conn.prepareStatement(statment);
+            conn.close();
             return prstmt.executeUpdate();
         } 
         catch (SQLException ex) {
