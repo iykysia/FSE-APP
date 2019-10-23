@@ -6,18 +6,23 @@
 		<link rel="stylesheet" href="../css/style.css">
 		<title>Login</title>
 	</head>
-	<body>
-		<header id="titleBar">Tutoring Website</header>
-		<main>
-			<h1 class="display-4">Login</h1>
-			<form action="/login" id="login" method="post">
-				<input id="username" name="username" type="text" class="form-control" placeholder="Username" required>
-				<input id="password" name="password" type="password" class="form-control" placeholder="Password" required>
-				<input id="rememberMe" type="checkbox">
-				<label for="rememberMe">Remember me</label>
-				<button id="login" type="submit">Login</button>
-				</input>
-			</form>
-		</main>
+	<body id="loginBody">
+		<header id="titleBar">CourseSurfer</header>
+		<div id="loginContainer">
+			<main id="login">
+				<h1>Login</h1>
+				<form action="/login" id="loginForm" method="post">
+					<input id="username" name="username" type="text" placeholder="Username" required>
+					<input id="password" name="password" type="password" placeholder="Password" required>
+					<label for="rememberMe">
+						<input id="rememberMe" type="checkbox">
+						<span>Remember me</span>
+					</label>
+					<button type="submit">Login</button>
+					</input>
+					<a id="forgotPassword" href="#">Forgot password?</a>
+				</form>
+			</main>
+		</div>
 	</body>
 </html>

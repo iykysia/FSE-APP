@@ -1,3 +1,5 @@
+/* GLOBAL STYLE */
+
 body {
 	/* VARIABLES */
 	--highlight: white;
@@ -10,16 +12,15 @@ body {
 	--padding: 40px;
 	--accent: black;
 	--shadow: rgba(0, 0, 0, 0.25);
+	--buttonGradient: linear-gradient( var(--highlight), var(--background) );
 	/* FONT */
 	font-family: "Helvetica Neue", "Segoe UI", "Arial", sans-serif;
 	/* COLOR */
 	background-image: url("../media/background.png");
 	/* LAYOUT */
-	display: flex;
-	justify-content: center;
-	align-items: center;
 	margin: 0;
-	height: 100vh;
+	display: flex;
+	flex-direction: column;
 }
 
 main {
@@ -27,7 +28,7 @@ main {
 	background: white;
 	/* LAYOUT */
 	padding: var(--padding);
-	width: 100%;
+	margin: var(--margin);
 }
 
 header {
@@ -35,37 +36,142 @@ header {
 	text-shadow: 0 1px white;
 	/* COLORS */
 	color: black;
-	background: linear-gradient( var(--highlight), var(--background) );
+	background: var(--buttonGradient);
 	box-shadow: 0 1px var(--accent);
 	/* LAYOUT */
 	height: 50px;
 	display: flex;
 	justify-content: left;
 	align-items: center;
-	position: absolute;
-	top: 0;
 	width: 100%;
+	display: flex;
+	justify-content: center;
 }
 
 nav {
 	height: 100%;
+	width: 100%;
 	display: flex;
-	flex-direction: row;
+}
+
+.navigationLeft, .navigationRight {
+	display: flex;
+}
+
+.navigationLeft {
+	flex: 1;
 }
 
 nav a {
 	border-left: solid var(--border) 1px;
-	border-right: solid var(--border) 1px;
-	margin-right: -1px;
 	height: 100%;
 	display: flex;
 	align-items: center;
 	padding: 0 var(--padding);
 }
 
+nav a:last-child {
+	border-right: solid var(--border) 1px;
+}
+
+
+/* LOGIN */
+
+#loginBody {
+	display: flex;
+	align-items: center;
+	margin: 0;
+	height: 100vh;
+}
+
+#loginContainer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100vh;
+}
+
 #login {
+	width: 40%;
+}
+
+#loginForm {
 	display: flex;
 	flex-direction: column;
+}
+
+/* MY COURSES */
+
+.subjectContainer {
+	display: flex;
+	flex-direction: row;
+	border: solid var(--border) 1px;
+	padding: var(--padding);
+	margin-bottom: var(--margin);
+	box-shadow: 0 1px 5px var(--shadow) inset;
+}
+
+.course {
+	padding: var(--padding);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 200px;
+	margin-right: var(--margin);
+	/* COLORS */
+	border: solid var(--border) 1px;
+	background: var(--buttonGradient);
+}
+
+.courseTitle {
+	font-weight: bold;
+}
+
+.courseNewAssignments {
+	font-style: italic;
+}
+
+/* COURSE PAGE */
+
+#courseHeader {
+	display: flex;
+}
+
+#courseName {
+	flex: 1;
+}
+
+#gradesButton {
+	background: var(--buttonGradient);
+	width: 100px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: solid var(--border) 1px;
+}
+
+.unit {
+	display: flex;
+	flex-direction: column;
+	border: solid var(--border) 1px;
+	padding: var(--padding);
+	margin-bottom: var(--margin);
+	box-shadow: 0 1px 5px var(--shadow) inset;
+}
+
+.module {
+	display: flex;
+	flex-direction: row;
+	margin-bottom: var(--margin);
+}
+
+.module:nth-child(odd) {
+	
+}
+
+.moduleName {
+	flex: 1;
 }
 
 /* WIDGETS */
@@ -79,6 +185,10 @@ input[type=text], input[type=password] {
 	margin-bottom: var(--margin);
 	height: var(--height);
 	border-radius: 1px;
+}
+
+label {
+	margin-bottom: var(--margin);
 }
 
 input::placeholder {
@@ -98,6 +208,7 @@ button {
 	justify-content: center;
 	background: linear-gradient( var(--highlight), var(--background) );
 	border-radius: 1px;
+	margin-bottom: var(--margin);
 }
 
 button:active {
