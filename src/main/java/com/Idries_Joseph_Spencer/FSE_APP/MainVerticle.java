@@ -88,26 +88,34 @@ else {
       }
       ctx.reroute(routeURI);
     });
-    
-    Route routeLogin = router.route("/login");
+
+    //RouteMaker Code Minimization
+    RouteBuilder.GetAndHTML(router,"/login","test.html");
+    RouteBuilder.GetAndTextResponse(router, "/login/fail", "login fail");
+    RouteBuilder.GetAndHTML(router,"/","test.html");
+
+
+    /*
+    //Old Code
+     Route routeLogin = router.route("/login");
     routeLogin.handler(routingContext -> {
       System.out.println("Get to login");
       HttpServerResponse response = routingContext.response();
       response.sendFile("src\\resources\\html\\test.html", 0);
     });
-
-
     Route routeLogin_fail = router.route("/login/fail");
     routeLogin_fail.handler(routingContext -> {
       HttpServerResponse response = routingContext.response();
       response.putHeader("content-type", "text/plain")
           .end("login fail");
     });
+
     Route routeBase = router.route("/");
     routeBase.handler(routingContext -> {
       HttpServerResponse response = routingContext.response();
       response.sendFile("src\\resources\\html\\test.html", 0);
     });
+    */
     Route routehomepage = router.route("/homepage");
     routehomepage.handler(routingContext -> {
       HttpServerResponse response = routingContext.response();

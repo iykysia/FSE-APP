@@ -8,6 +8,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
+
+//TODO
+//Make a builder/factory Pattern for this
 public class MySQLLinker{
 
     //TODO
@@ -74,7 +78,7 @@ public class MySQLLinker{
 
 
 
-    
+
     @Deprecated
     public static ResultSet ConnectAndQuery(String database, String user, String password, String query){
         Connection conn = null;
