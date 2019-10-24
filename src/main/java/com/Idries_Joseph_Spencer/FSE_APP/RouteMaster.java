@@ -20,7 +20,7 @@ public class RouteMaster
     private RouteMaster (){
 
     }
-    private static RouteMaster buildBase(RouteMaster build, Router router, String route){
+    private static  RouteMaster buildBase(RouteMaster build, Router router, String route){
         build.router = router;
         build.route = route;
 
@@ -29,8 +29,8 @@ public class RouteMaster
     public static RouteMaster buildGet(Router router, String route){
         RouteMaster build = new RouteMaster();
         build.post = false;
-        build.buildBase(router, route);
-
+        build = RouteMaster.buildBase(build, router, route);
+        
         return build;
     }
     public static RouteMaster buildPost(Router Router, String Route){
