@@ -71,6 +71,10 @@ public class MySQLLinker{
         return ret;
     } 
 
+
+
+
+    
     @Deprecated
     public static ResultSet ConnectAndQuery(String database, String user, String password, String query){
         Connection conn = null;
