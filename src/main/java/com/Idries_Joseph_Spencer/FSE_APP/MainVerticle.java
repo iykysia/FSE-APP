@@ -74,7 +74,7 @@ else {
     router.post("/signup").handler(ctx -> {
       
     });
-
+/*
     router.post("/login").handler(ctx -> {
       String routeURI = "/login/fail";
       if(ctx.request().getParam("username") != null && ctx.request().getParam("password") != null)
@@ -88,11 +88,26 @@ else {
       }
       ctx.reroute(routeURI);
     });
+    */
+    RouteMaster login = RouteMaster.buildPost(router, "/login").defineResponse(RouteMaster.ResponseType.reroute, "/login/fail");
+    login.defineAction( (context) ->{
+      if(context.request().getParam("username") != null && context.request().getParam("password") != null)
+      {
+        if(context.request().getParam("password").equals("password")){
+          Session session = context.session();
+          user = context.request().getParam("username");
+          session.put("username", user);
+          login.defineResponse(RouteMaster.ResponseType.reroute, "/homepage");
+      }
+      }
+    });
+    login.execute();
+
 
     //RouteMaker Code Minimization
-    RouteBuilder.GetAndHTML(router,"/login","test.html");
-    RouteBuilder.GetAndTextResponse(router, "/login/fail", "login fail");
-    RouteBuilder.GetAndHTML(router,"/","test.html");
+    RouteMaster.GetAndHTML(router,"/login","test.html");
+    RouteMaster.GetAndTextResponse(router, "/login/fail", "login fail");
+    RouteMaster.GetAndHTML(router,"/","test.html");
 
 
     /*

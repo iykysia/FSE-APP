@@ -9,40 +9,92 @@ import io.vertx.ext.web.RoutingContext;
 //converting this to a Builder pattern
 public class RouteMaster
 {
+     public enum ResponseType{
+        text,
+        reroute,
+        html,
+    }
+    public interface RouteActionLambda{
+        void routeAction(RoutingContext context);
+    }
     private String route;
-    private String endRoute;
     private Router router;
     private String resp;
-    private RouteAction action;
+    private RouteActionLambda action;
     private boolean post;
+    // private RoutingContext context;
+    private ResponseType respType;
     
     
     private RouteMaster (){
 
     }
-    private static  RouteMaster buildBase(RouteMaster build, Router router, String route){
+   
+    public static RouteMaster buildGet(Router router, String route){
+        RouteMaster build = new RouteMaster();
+        build.post = false;
         build.router = router;
         build.route = route;
 
         return build;
     }
-    public static RouteMaster buildGet(Router router, String route){
-        RouteMaster build = new RouteMaster();
-        build.post = false;
-        build = RouteMaster.buildBase(build, router, route);
-        
-        return build;
-    }
-    public static RouteMaster buildPost(Router Router, String Route){
+
+    public static RouteMaster buildPost(Router router, String route){
         RouteMaster build = new RouteMaster();
         build.post = true;
-        
+        build.router = router;
+                build.route = route;
+
         return build;
     }
-
     
-    public interface RouteAction{
-        void routeAction();
+    public RouteMaster defineResponse(ResponseType responseType, String resp){
+        respType = responseType;
+        this.resp = resp;
+        return this;
+    }
+    
+    public RouteMaster defineAction(RouteActionLambda action){
+        this.action = action;
+        return this;
+    }
+
+    private void ResponseSwitch(RoutingContext context, ResponseType type, String resp){
+        switch(type){
+            case reroute:
+                RouteMaster.RerouteResponse( context, resp);
+                break;
+            case html:
+                RouteMaster.HtmlResponse(context, resp);
+            break;
+            case text:
+                RouteMaster.TextResponse( context, resp);
+            break;
+            
+        }
+    }
+    public void execute(){
+        if(post){
+            post();
+        }
+        else{
+            get();
+        }
+    }
+    private void post(){
+        router.post(route).handler(requestHandler -> {
+            
+            action.routeAction(requestHandler);
+            ResponseSwitch(requestHandler,respType,resp);
+        });
+
+    }
+    private void get(){
+        router.post(route).handler(requestHandler -> {
+
+            action.routeAction(requestHandler);
+            ResponseSwitch(requestHandler, respType,resp);
+        });
     }
 
 
@@ -64,10 +116,16 @@ public class RouteMaster
     });
     }
 
+
+
     public static void HtmlResponse(RoutingContext routingContext, String html)
     {
         HttpServerResponse response = routingContext.response();
         response.sendFile("src\\resources\\html\\"+html, 0);
+    }
+    public static void RerouteResponse(RoutingContext routingContext, String html)
+    {
+        routingContext.reroute(html);
     }
     public static void TextResponse(RoutingContext routingContext, String text)
     {
@@ -75,9 +133,4 @@ public class RouteMaster
         response.putHeader("content-type", "text/plain")
             .end(text);    
     }
-
-    public static void GetAndReroute(){
-
-    }
-
 }
