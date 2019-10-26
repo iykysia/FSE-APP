@@ -17,11 +17,11 @@ public class MySQLLinker{
     //TODO
     //  this has to be created to secure the system in order to prevent others from using it to query unacceptable stuff
     // keep this private as a means of preventing others from doing work in it
-    private static Connection Connect (String database, String user, String password){
+    public static Connection Connect (String database, String user, String password){
         Connection conn = null;
         try {
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+ database +"?useSSL=false&serverTimezone=UTC", user,password);
-            conn.close();
+            // conn.close();
             return conn;
         } 
         catch (SQLException ex) {
@@ -35,6 +35,8 @@ public class MySQLLinker{
     public static interface PreparedStatementLambda{
         PreparedStatement PrepareAStatment(Connection conn);
     }
+
+
 
     private static int PreparedStatementExecute(String database, String user, String password, PreparedStatementLambda prepare){
         int ret = -1;
@@ -55,6 +57,7 @@ public class MySQLLinker{
        return ret;
 
     } 
+
     private static ResultSet PreparedStatementQuery(String database, String user, String password, PreparedStatementLambda prepare){
         ResultSet  ret = null;
         Connection  conn = Connect (database, user, password);

@@ -1,6 +1,9 @@
 package com.Idries_Joseph_Spencer.FSE_APP;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
@@ -53,9 +56,36 @@ try {
 }
 */
 
-ResultSet rs = MySQLLinker.ConnectAndQuery("sakila", "root", "jinn", "Select * from actor");
-if(!rs.equals(null)) {
+Connection connect = MySQLLinker.Connect("fse", "root", "fse");
+if(!connect.equals(null)) {
+  System.out.println(connect.toString());
+  // connect.createStatement().execute("use fse");
+  PreparedStatement stmt = connect.prepareStatement("SELECT * FROM users");
+  ResultSet rs = stmt.executeQuery();
   System.out.println(rs.toString());
+  try{
+  // System.out.println(rs.getString("actor_id"));
+  
+  while (rs.next()) {
+    // retrieve and print the values for the current row
+    String i = rs.getString("username");
+    // if(rs.getString("username").equals())
+    System.out.println("ROW = " + i );
+  }
+  connect.close();
+  // while (rs.next()) {
+  //   // retrieve and print the values for the current row
+  //   int i = rs.getInt("actor_id");
+
+  //   System.out.println("ROW = " + i );
+  // }
+
+  }
+  catch (Exception e){
+    System.out.println("failed query");
+  }
+  // connect.setAutoCommit(false);
+  // PreparedStatement prs = connect.prepareStatement();
 }
 else {  
   System.out.println("LinkerFailed");
@@ -91,6 +121,15 @@ else {
     */
     RouteMaster login = RouteMaster.buildPost(router, "/login").defineResponse(RouteMaster.ResponseType.reroute, "/login/fail");
     login.defineAction( (context) ->{
+
+      Connection connLogin = MySQLLinker.Connect("fse", "root", "fse");
+      try{
+      PreparedStatement loginstm = connLogin.prepareStatement("SELECT * FROM users");
+      ResultSet rs = loginstm.executeQuery();
+      }
+      catch (Exception e){
+        e.printStackTrace();
+      }
       if(context.request().getParam("username") != null && context.request().getParam("password") != null)
       {
         if(context.request().getParam("password").equals("password")){
