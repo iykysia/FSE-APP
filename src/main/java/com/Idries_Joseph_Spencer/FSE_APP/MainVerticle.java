@@ -63,32 +63,31 @@ public class MainVerticle extends AbstractVerticle {
       System.out.println("LinkerFailed");
     }
 
-    router.post("/signup").handler(ctx -> {
+    router.post("/").handler(ctx -> {
       Connection signupInsert = MySQLLinker.Connect("fse", "root", "fse");
       if(!signupInsert.equals(null)) {
-        System.out.println(signupInsert.toString());
-        // connect.createStatement().execute("use fse");
-        
+        // System.out.println(signupInsert.toString());
         try{
-          System.out.println(ctx.request().getParam("username") + " & " + ctx.request().getParam("password") + " added");
+          // System.out.println(ctx.request().getParam("username") + " & " + ctx.request().getParam("password") + " added");
           PreparedStatement signUpStatement = signupInsert.prepareStatement("INSERT INTO users (username, password) VALUES (?, ?);");
           signUpStatement.setString(1, ctx.request().getParam("username"));
           signUpStatement.setString(2, ctx.request().getParam("password"));
           int row = signUpStatement.executeUpdate();
-          System.out.println("row: " + row);
+          // System.out.println("row: " + row);
           signupInsert.close();
         }
         catch (Exception e){
           e.printStackTrace();
-          System.out.println("failed query");
+          // System.out.println("failed query");
         }
 
       }
       else {  
-        System.out.println("LinkerFailed");
+        // System.out.println("LinkerFailed");
       }
+      ctx.reroute("/login");
     });
-    RouteMaster.GetAndHTML(router,"/signup","signup.html");
+    RouteMaster.GetAndHTML(router,"/","signup.html");
 
     RouteMaster login = RouteMaster.buildPost(router, "/login").defineResponse(RouteMaster.ResponseType.reroute, "/login/fail");
     login.defineAction( (context) ->{
@@ -145,7 +144,7 @@ public class MainVerticle extends AbstractVerticle {
     //RouteMaker Code Minimization
     RouteMaster.GetAndHTML(router,"/login","test.html");
     RouteMaster.GetAndTextResponse(router, "/login/fail", "login fail");
-    RouteMaster.GetAndHTML(router,"/","test.html");
+    // RouteMaster.GetAndHTML(router,"/","test.html");
 
     Route routehomepage = router.route("/homepage");
     routehomepage.handler(routingContext -> {
