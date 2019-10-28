@@ -38,6 +38,18 @@
   </dependencyManagement>
 
   <dependencies>
+
+  <dependency>
+ <groupId>io.vertx</groupId>
+ <artifactId>vertx-auth-jwt</artifactId>
+ <version>3.8.3</version>
+</dependency>
+
+  <dependency>
+ <groupId>io.vertx</groupId>
+ <artifactId>vertx-jdbc-client</artifactId>
+ <version>3.8.3</version>
+</dependency>
   <dependency>
     <groupId>io.vertx</groupId>
     <artifactId>vertx-web</artifactId>

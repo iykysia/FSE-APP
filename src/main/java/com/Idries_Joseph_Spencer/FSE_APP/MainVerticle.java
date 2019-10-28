@@ -9,6 +9,11 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.asyncsql.AsyncSQLClient;
+import io.vertx.ext.asyncsql.MySQLClient;
+import io.vertx.ext.jdbc.JDBCClient;
+import io.vertx.ext.sql.SQLConnection;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.Session;
@@ -26,8 +31,182 @@ public class MainVerticle extends AbstractVerticle {
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
     HttpServer server = vertx.createHttpServer();
+    Router router = Router.router(vertx);
+    SessionStore store = LocalSessionStore.create(vertx, "MainVerticle.sessionmap");
+    SessionHandler sessionHandler = SessionHandler.create(store);
+
+    router.route().handler(sessionHandler);
+    router.route().handler(BodyHandler.create());
+
+
+    Connection connect = MySQLLinker.Connect("fse", "root", "fse");
+    if(!connect.equals(null)) {
+      System.out.println(connect.toString());
+      // connect.createStatement().execute("use fse");
+      PreparedStatement stmt = connect.prepareStatement("SELECT * FROM users");
+      ResultSet rs = stmt.executeQuery();
+      System.out.println(rs.toString());
+      try{
+      
+      while (rs.next()) {
+        String i = rs.getString("username");
+        System.out.println("ROW = " + i );
+      }
+      connect.close();
+      }
+      catch (Exception e){
+        System.out.println("failed query");
+      }
+
+    }
+    else {  
+      System.out.println("LinkerFailed");
+    }
+
+    router.post("/signup").handler(ctx -> {
+      Connection signupInsert = MySQLLinker.Connect("fse", "root", "fse");
+      if(!signupInsert.equals(null)) {
+        System.out.println(signupInsert.toString());
+        // connect.createStatement().execute("use fse");
+        
+        try{
+          System.out.println(ctx.request().getParam("username") + " & " + ctx.request().getParam("password") + " added");
+          PreparedStatement signUpStatement = signupInsert.prepareStatement("INSERT INTO users (username, password) VALUES (?, ?);");
+          signUpStatement.setString(1, ctx.request().getParam("username"));
+          signUpStatement.setString(2, ctx.request().getParam("password"));
+          int row = signUpStatement.executeUpdate();
+          System.out.println("row: " + row);
+          signupInsert.close();
+        }
+        catch (Exception e){
+          e.printStackTrace();
+          System.out.println("failed query");
+        }
+
+      }
+      else {  
+        System.out.println("LinkerFailed");
+      }
+    });
+    RouteMaster.GetAndHTML(router,"/signup","signup.html");
+
+    RouteMaster login = RouteMaster.buildPost(router, "/login").defineResponse(RouteMaster.ResponseType.reroute, "/login/fail");
+    login.defineAction( (context) ->{
+
+      Connection connLogin = MySQLLinker.Connect("fse", "root", "fse");
+      try{
+      PreparedStatement loginstm = connLogin.prepareStatement("SELECT * FROM users");
+      ResultSet rs = loginstm.executeQuery();
+      }
+      catch (Exception e){
+        e.printStackTrace();
+      }
+      if(context.request().getParam("username") != null && context.request().getParam("password") != null)
+      {
+        System.out.println("login attempt");
+        Connection logiConnection = MySQLLinker.Connect("fse", "root", "fse");
+        if(!logiConnection.equals(null)) {
+        try{
+          PreparedStatement loginPreparedStatement = logiConnection.prepareStatement("SELECT * FROM users WHERE username = ?");
+          loginPreparedStatement.setString(1, context.request().getParam("username"));
+          ResultSet rs = loginPreparedStatement.executeQuery();
+          System.out.println(rs.toString());
+          while (rs.next()) {
+            if(context.request().getParam("password").equals(rs.getString("password"))){
+              Session session = context.session();
+              user = context.request().getParam("username");
+              session.put("username", user);
+              login.defineResponse(RouteMaster.ResponseType.reroute, "/homepage");
+            }
+          }
+          logiConnection.close();
+        }
+        catch (Exception e){
+          e.printStackTrace();
+          System.out.println("failed login");
+        }
+      }
+      else {  
+        System.out.println("LinkerFailed");
+      }
+
+
+      //   if(context.request().getParam("password").equals("password")){
+      //     Session session = context.session();
+      //     user = context.request().getParam("username");
+      //     session.put("username", user);
+      //     login.defineResponse(RouteMaster.ResponseType.reroute, "/homepage");
+      // }
+      }
+    });
+    login.execute();
+
+
+    //RouteMaker Code Minimization
+    RouteMaster.GetAndHTML(router,"/login","test.html");
+    RouteMaster.GetAndTextResponse(router, "/login/fail", "login fail");
+    RouteMaster.GetAndHTML(router,"/","test.html");
+
+    Route routehomepage = router.route("/homepage");
+    routehomepage.handler(routingContext -> {
+      HttpServerResponse response = routingContext.response();
+      Session session = routingContext.session();
+      response.putHeader("content-type", "text/plain")
+          .end("login success, Welcome " 
+          + user);
+    });
+
+    router.errorHandler(500, rc -> {
+      System.err.println("Handling failure");
+      Throwable failure = rc.failure();
+      if (failure != null) {
+        failure.printStackTrace();
+      }
+    });
+    server.requestHandler(router).listen(8888);
+
+  }
+}
 
 /*
+    router.post("/login").handler(ctx -> {
+      String routeURI = "/login/fail";
+      if(ctx.request().getParam("username") != null && ctx.request().getParam("password") != null)
+      {
+        if(ctx.request().getParam("password").equals("password")){
+          Session session = ctx.session();
+          user = ctx.request().getParam("username");
+          session.put("username", user);
+          routeURI = "/homepage";
+      }
+      }
+      ctx.reroute(routeURI);
+    });
+    */
+
+     /*
+    //Old Code
+     Route routeLogin = router.route("/login");
+    routeLogin.handler(routingContext -> {
+      System.out.println("Get to login");
+      HttpServerResponse response = routingContext.response();
+      response.sendFile("src\\resources\\html\\test.html", 0);
+    });
+    Route routeLogin_fail = router.route("/login/fail");
+    routeLogin_fail.handler(routingContext -> {
+      HttpServerResponse response = routingContext.response();
+      response.putHeader("content-type", "text/plain")
+          .end("login fail");
+    });
+
+    Route routeBase = router.route("/");
+    routeBase.handler(routingContext -> {
+      HttpServerResponse response = routingContext.response();
+      response.sendFile("src\\resources\\html\\test.html", 0);
+    });
+    */
+
+    /*
 ///
 ///This is code is the same as MySQLLinker
 ///
@@ -55,138 +234,3 @@ try {
   System.out.println("VendorError: " + ex.getErrorCode());
 }
 */
-
-Connection connect = MySQLLinker.Connect("fse", "root", "fse");
-if(!connect.equals(null)) {
-  System.out.println(connect.toString());
-  // connect.createStatement().execute("use fse");
-  PreparedStatement stmt = connect.prepareStatement("SELECT * FROM users");
-  ResultSet rs = stmt.executeQuery();
-  System.out.println(rs.toString());
-  try{
-  // System.out.println(rs.getString("actor_id"));
-  
-  while (rs.next()) {
-    // retrieve and print the values for the current row
-    String i = rs.getString("username");
-    // if(rs.getString("username").equals())
-    System.out.println("ROW = " + i );
-  }
-  connect.close();
-  // while (rs.next()) {
-  //   // retrieve and print the values for the current row
-  //   int i = rs.getInt("actor_id");
-
-  //   System.out.println("ROW = " + i );
-  // }
-
-  }
-  catch (Exception e){
-    System.out.println("failed query");
-  }
-  // connect.setAutoCommit(false);
-  // PreparedStatement prs = connect.prepareStatement();
-}
-else {  
-  System.out.println("LinkerFailed");
-}
-
-
-    
-    Router router = Router.router(vertx);
-    SessionStore store = LocalSessionStore.create(vertx, "MainVerticle.sessionmap");
-    SessionHandler sessionHandler = SessionHandler.create(store);
-
-    router.route().handler(sessionHandler);
-    router.route().handler(BodyHandler.create());
-
-
-    router.post("/signup").handler(ctx -> {
-      
-    });
-/*
-    router.post("/login").handler(ctx -> {
-      String routeURI = "/login/fail";
-      if(ctx.request().getParam("username") != null && ctx.request().getParam("password") != null)
-      {
-        if(ctx.request().getParam("password").equals("password")){
-          Session session = ctx.session();
-          user = ctx.request().getParam("username");
-          session.put("username", user);
-          routeURI = "/homepage";
-      }
-      }
-      ctx.reroute(routeURI);
-    });
-    */
-    RouteMaster login = RouteMaster.buildPost(router, "/login").defineResponse(RouteMaster.ResponseType.reroute, "/login/fail");
-    login.defineAction( (context) ->{
-
-      Connection connLogin = MySQLLinker.Connect("fse", "root", "fse");
-      try{
-      PreparedStatement loginstm = connLogin.prepareStatement("SELECT * FROM users");
-      ResultSet rs = loginstm.executeQuery();
-      }
-      catch (Exception e){
-        e.printStackTrace();
-      }
-      if(context.request().getParam("username") != null && context.request().getParam("password") != null)
-      {
-        if(context.request().getParam("password").equals("password")){
-          Session session = context.session();
-          user = context.request().getParam("username");
-          session.put("username", user);
-          login.defineResponse(RouteMaster.ResponseType.reroute, "/homepage");
-      }
-      }
-    });
-    login.execute();
-
-
-    //RouteMaker Code Minimization
-    RouteMaster.GetAndHTML(router,"/login","test.html");
-    RouteMaster.GetAndTextResponse(router, "/login/fail", "login fail");
-    RouteMaster.GetAndHTML(router,"/","test.html");
-
-
-    /*
-    //Old Code
-     Route routeLogin = router.route("/login");
-    routeLogin.handler(routingContext -> {
-      System.out.println("Get to login");
-      HttpServerResponse response = routingContext.response();
-      response.sendFile("src\\resources\\html\\test.html", 0);
-    });
-    Route routeLogin_fail = router.route("/login/fail");
-    routeLogin_fail.handler(routingContext -> {
-      HttpServerResponse response = routingContext.response();
-      response.putHeader("content-type", "text/plain")
-          .end("login fail");
-    });
-
-    Route routeBase = router.route("/");
-    routeBase.handler(routingContext -> {
-      HttpServerResponse response = routingContext.response();
-      response.sendFile("src\\resources\\html\\test.html", 0);
-    });
-    */
-    Route routehomepage = router.route("/homepage");
-    routehomepage.handler(routingContext -> {
-      HttpServerResponse response = routingContext.response();
-      Session session = routingContext.session();
-      response.putHeader("content-type", "text/plain")
-          .end("login success, Welcome " 
-          + user);
-    });
-
-    router.errorHandler(500, rc -> {
-      System.err.println("Handling failure");
-      Throwable failure = rc.failure();
-      if (failure != null) {
-        failure.printStackTrace();
-      }
-    });
-    server.requestHandler(router).listen(8888);
-
-  }
-}
