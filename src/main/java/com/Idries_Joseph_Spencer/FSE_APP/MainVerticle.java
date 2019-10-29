@@ -63,7 +63,7 @@ public class MainVerticle extends AbstractVerticle {
       System.out.println("LinkerFailed");
     }
 
-    router.post("/").handler(ctx -> {
+    router.post("/signup").handler(ctx -> {
       Connection signupInsert = MySQLLinker.Connect("fse", "root", "fse");
       if(!signupInsert.equals(null)) {
         // System.out.println(signupInsert.toString());
@@ -87,19 +87,9 @@ public class MainVerticle extends AbstractVerticle {
       }
       ctx.reroute("/login");
     });
-    RouteMaster.GetAndHTML(router,"/","signup.html");
 
     RouteMaster login = RouteMaster.buildPost(router, "/login").defineResponse(RouteMaster.ResponseType.reroute, "/login/fail");
     login.defineAction( (context) ->{
-
-      Connection connLogin = MySQLLinker.Connect("fse", "root", "fse");
-      try{
-      PreparedStatement loginstm = connLogin.prepareStatement("SELECT * FROM users");
-      ResultSet rs = loginstm.executeQuery();
-      }
-      catch (Exception e){
-        e.printStackTrace();
-      }
       if(context.request().getParam("username") != null && context.request().getParam("password") != null)
       {
         System.out.println("login attempt");
@@ -144,7 +134,7 @@ public class MainVerticle extends AbstractVerticle {
     //RouteMaker Code Minimization
     RouteMaster.GetAndHTML(router,"/login","test.html");
     RouteMaster.GetAndTextResponse(router, "/login/fail", "login fail");
-    // RouteMaster.GetAndHTML(router,"/","test.html");
+    RouteMaster.GetAndHTML(router,"/","signup.html");
 
     Route routehomepage = router.route("/homepage");
     routehomepage.handler(routingContext -> {
