@@ -7,6 +7,7 @@ import java.sql.Statement;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
@@ -38,54 +39,24 @@ public class MainVerticle extends AbstractVerticle {
     router.route().handler(sessionHandler);
     router.route().handler(BodyHandler.create());
 
-
-    Connection connect = MySQLLinker.Connect("fse", "root", "fse");
-    if(!connect.equals(null)) {
-      System.out.println(connect.toString());
-      // connect.createStatement().execute("use fse");
-      PreparedStatement stmt = connect.prepareStatement("SELECT * FROM users");
-      ResultSet rs = stmt.executeQuery();
-      System.out.println(rs.toString());
-      try{
-      
-      while (rs.next()) {
-        String i = rs.getString("username");
-        System.out.println("ROW = " + i );
-      }
-      connect.close();
-      }
-      catch (Exception e){
-        System.out.println("failed query");
-      }
-
-    }
-    else {  
-      System.out.println("LinkerFailed");
-    }
-
     router.post("/signup").handler(ctx -> {
-      Connection signupInsert = MySQLLinker.Connect("fse", "root", "fse");
-      if(!signupInsert.equals(null)) {
-        // System.out.println(signupInsert.toString());
         try{
-          // System.out.println(ctx.request().getParam("username") + " & " + ctx.request().getParam("password") + " added");
+          Connection signupInsert = MySQLLinker.Connect("fse", "root", "fse");
           PreparedStatement signUpStatement = signupInsert.prepareStatement("INSERT INTO users (username, password) VALUES (?, ?);");
           signUpStatement.setString(1, ctx.request().getParam("username"));
           signUpStatement.setString(2, ctx.request().getParam("password"));
-          int row = signUpStatement.executeUpdate();
-          // System.out.println("row: " + row);
+          signUpStatement.executeUpdate();
           signupInsert.close();
         }
         catch (Exception e){
           e.printStackTrace();
-          // System.out.println("failed query");
         }
+      // ctx.response().end();
+      ctx.request().params().clear();
+      ctx.reroute(HttpMethod.GET, "/login");
 
-      }
-      else {  
-        // System.out.println("LinkerFailed");
-      }
-      ctx.reroute("/login");
+      // ctx.response().end();
+
     });
 
     RouteMaster login = RouteMaster.buildPost(router, "/login").defineResponse(RouteMaster.ResponseType.reroute, "/login/fail");
