@@ -41,7 +41,7 @@ public class MainVerticle extends AbstractVerticle {
 
     router.post("/signup").handler(ctx -> {
         try{
-          Connection signupInsert = MySQLLinker.Connect("fse", "root", "fse");
+          Connection signupInsert = MySQLLinker.Connect("fse_sprint1", "root", "fse");
           PreparedStatement signUpStatement = signupInsert.prepareStatement("INSERT INTO users (username, password) VALUES (?, ?);");
           signUpStatement.setString(1, ctx.request().getParam("username"));
           signUpStatement.setString(2, ctx.request().getParam("password"));
@@ -64,19 +64,25 @@ public class MainVerticle extends AbstractVerticle {
       if(context.request().getParam("username") != null && context.request().getParam("password") != null)
       {
         System.out.println("login attempt");
-        Connection logiConnection = MySQLLinker.Connect("fse", "root", "fse");
+        Connection logiConnection = MySQLLinker.Connect("fse_sprint1", "root", "fse");
         if(!logiConnection.equals(null)) {
         try{
+          System.out.println(""+context.request().getParam("username") + " & " + context.request().getParam("password"));
           PreparedStatement loginPreparedStatement = logiConnection.prepareStatement("SELECT * FROM users WHERE username = ?");
           loginPreparedStatement.setString(1, context.request().getParam("username"));
           ResultSet rs = loginPreparedStatement.executeQuery();
           System.out.println(rs.toString());
+
           while (rs.next()) {
+            System.out.println(rs.getString("username")+" & "+rs.getString("password"));
             if(context.request().getParam("password").equals(rs.getString("password"))){
               Session session = context.session();
               user = context.request().getParam("username");
               session.put("username", user);
               login.defineResponse(RouteMaster.ResponseType.reroute, "/homepage");
+            }
+            else{
+              break;
             }
           }
           logiConnection.close();
